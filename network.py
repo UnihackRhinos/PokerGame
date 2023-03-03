@@ -16,13 +16,13 @@ class Network:
     def connect(self):
         try:
             self.client.connect(self.addr)
-            return self.client.recv(2048).decode()
+            return pickle.loads(self.client.recv(1024*8))
         except:
             pass
 
     def send(self, data):
         try:
-            self.client.send(str.encode(data))
-            return pickle.loads(self.client.recv(2048*2))
+            self.client.send(pickle.dumps(data))
+            return pickle.loads(self.client.recv(1024*8))
         except socket.error as e:
             print(e)
