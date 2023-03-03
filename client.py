@@ -35,7 +35,7 @@ def main():
     clock.tick(30)# run at 30 frames per second since not many moving parts
     screen.blit(bg, (0, 0)) # sets background to bg image
     
-    player = int(n.getP())
+    player = int(net.getP())
     print("you are player: ",player)
     
     while running:
