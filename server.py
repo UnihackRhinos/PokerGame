@@ -34,9 +34,7 @@ def threaded_client(conn, player):
                 print("Received:", data)
                 print("Responding with:", reply)
 
-            conn.sendall(pickle.dumps(game))
-            else:
-                break
+            conn.sendall(pickle.dumps(reply))
         except:
             break
 
