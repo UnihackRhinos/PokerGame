@@ -3,7 +3,7 @@ from _thread import *
 import pickle
 #from Game import some shizzle
 
-server = "118.138.196.207" # replace this with your ipv4 address to test, also replace in network.py
+server = "118.138.23.2" # replace this with your ipv4 address to test, also replace in network.py
 port = 5050
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
