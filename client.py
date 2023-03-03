@@ -1,6 +1,17 @@
 import pygame
 import sys
 
+def displayCard(rank, suit, xcoord, ycoord):
+    # displayCard(rank, suit)
+    # rank- the cards value ace to king
+    # suit- the cards suit, clubs hearts etc.
+    # xcoord/ycoord- location of top left of image
+    # function takes two strings and combines them to 
+    # create an image name to then display in a given location 
+    cardFile = rank + suit + ".jpg"
+    location = (xcoord, ycoord)
+    screen.blit(cardFile, location)
+    pygame.display.update()
 
 # initialise the game and screen size
 pygame.init()  # initialize pygame
