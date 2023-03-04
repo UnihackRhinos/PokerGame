@@ -117,17 +117,16 @@ def main():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if toAct[player]: # remove to replace with backend deciding when acting
+                    # function of each button needs to be connected to backend
                     if betButtonRect.collidepoint(event.pos):
-                        printout = font.render('You betted, Bitch', True, (0,0,0))
-                        screen.blit(printout, (250,300))
                         screen.blit(bg, (0, 0)) # sets background to bg image
                         toAct = 0
                     if checkButtonRect.collidepoint(event.pos):
-                        printout = font.render('You checked, Bitch', True, (0,0,0))
-                        screen.blit(printout, (250,300))
+                        screen.blit(bg, (0, 0)) # sets background to bg image
+                        toAct = 0
                     if foldButtonRect.collidepoint(event.pos):
-                        printout = font.render('You folded, Bitch', True, (0,0,0))
-                        screen.blit(printout, (250,300))
+                        screen.blit(bg, (0, 0)) # sets background to bg image
+                        toAct = 0
 
 
         pygame.display.update()
