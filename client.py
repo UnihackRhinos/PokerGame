@@ -1,6 +1,7 @@
 import pygame
 from network import Network
 import sys
+import time
 
 def winLosePrint(win, potSize):
     if win:
@@ -45,12 +46,12 @@ def displayCard(rank, suit, xcoord, ycoord):
 
 def updateHUD(playerStack, oppStack, pot):
     playerText = font.render("stack: " + playerStack, True, (255,255,255))
-    playerRect = pygame.Rect(500,350,80,50) #Rect(left, top, width, height)
+    playerRect = pygame.Rect(500,350,96,60) #Rect(left, top, width, height)
     pygame.draw.rect(screen, (90,150,0),playerRect) # draw rectangle first so it doesn't cover text
     screen.blit(playerText, playerRect)
 
     oppText = font.render("stack: " + oppStack, True, (255,255,255))
-    oppRect = pygame.Rect(500, 10, 80, 50)
+    oppRect = pygame.Rect(500, 10, 96, 60)
     pygame.draw.rect(screen, (255,0,0),oppRect)
     screen.blit(oppText, oppRect)
 
@@ -130,19 +131,57 @@ def main():
     
     player = int(net.getP())
     print("you are player: ",player)
-    toAct = [0,0]
     loadButtons(0)
     winLosePrint(0, 600)
     
     while running:
         x, y = pygame.mouse.get_pos()
         mackasRules = net.send("pull_request") #pull request, where everything is stored
-        updateHUD("100", "100", "10")
-        displayCard("Ace", "Spades", 108, 142)
-        displayCard("Ace", "Diamonds", 190, 142)
-        displayCard("Queen", "Hearts", 275, 142)
-        displayCard("King", "Hearts", 355, 142)
-        displayCard("Ace", "Hearts", 437, 142)       
+        #if mackasRules.player_has_folded and mackasRules.position[player]:
+
+        # check if it's time to flop, turn, river
+        if mackasRules.betting_round == 1:
+            net.send("flop")
+        if mackasRules.betting_round == 2:
+            net.send("turn")
+        if mackasRules.betting_round == 3:
+            net.send("river")
+        # read who's turn it is to act
+        if mackasRules.num_of_actions[player] == mackasRules.num_of_actions[(player + 1) % 2]:
+            toAct = mackasRules.position[player]
+        else:
+            toAct = (mackasRules.num_of_actions[player] < mackasRules.num_of_actions[(player + 1) % 2])
+        if toAct:
+            print("your turn")
+            print(mackasRules.num_of_actions)
+        # read the stacks and pot and update the display
+        updateHUD(str(mackasRules.stack[player]),str(mackasRules.stack[(player + 1) % 2]),str(mackasRules.pot))
+        # read the cards in players hand and those on the board
+        if len(mackasRules.runout):
+            for i in range(len(mackasRules.runout)):
+                run = mackasRules.runout[i]
+                run = run.split(" of ")
+                displayCard(run[0],run[1], 108+77*i, 142)
+        else:
+            net.send("preflop")
+            time.sleep(0.1)
+
+        mackasRules = net.send("pull_request")
+        hand1 = mackasRules.hand[player][0]
+        hand1 = hand1.split(" of ")
+        hand2 = mackasRules.hand[player][1]
+        hand2 = hand2.split(" of ")
+        displayCard(hand1[0], hand1[1], 230, 340)
+        displayCard(hand2[0], hand2[1], 310, 340)
+        #displayCard(mackasRules.hand[player][1].suit, mackasRules.hand[player][1].value, 230, 340)
+        #updateHUD(str(1000), "1000", "0")
+        #displayCard("Ace", "Spades", 108, 142)
+        #displayCard("Ace", "Diamonds", 190, 142)
+        #displayCard("Queen", "Hearts", 275, 142)
+        #displayCard("King", "Hearts", 355, 142)
+        #displayCard("Ace", "Hearts", 437, 142)   
+        #displayCard("Ace", "Hearts", 230, 340)  
+        #displayCard("Ace", "Hearts", 320, 340)   
         
         
         for event in pygame.event.get():
@@ -150,27 +189,23 @@ def main():
                 running = False
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if toAct[player]: # remove to replace with backend deciding when acting
+                if toAct: # remove to replace with backend deciding when acting
                     # function of each button needs to be connected to backend
                     if betButtonRect.collidepoint(event.pos):
-                        screen.blit(bg, (0, 0)) # sets background to bg image
-                        toAct = 0
+                        #toAct = 0
                         net.send("halfPotBet") # request
                     if fullPotButtonRect.collidepoint(event.pos):
-                        screen.blit(bg, (0, 0)) # sets background to bg image
-                        toAct = 0
+                        #toAct = 0
                         net.send("fullPotBet") # request
                     if allInButtonRect.collidepoint(event.pos):
-                        screen.blit(bg, (0, 0)) # sets background to bg image
-                        toAct = 0
+                        #toAct = 0
                         net.send("allIn") # request
+                        print("going all in (not mitch's fault)")
                     if checkButtonRect.collidepoint(event.pos):
-                        screen.blit(bg, (0, 0)) # sets background to bg image
-                        toAct = 0
+                        #toAct = 0
                         net.send("check") #request
                     if foldButtonRect.collidepoint(event.pos):
-                        screen.blit(bg, (0, 0)) # sets background to bg image
-                        toAct = 0
+                        #toAct = 0
                         net.send("fold") #request
 
 
