@@ -53,6 +53,7 @@ class Game:
         self.deck = self.Deck().cards
         self.runout = []
         self.hand = [[], []]
+        self.handstarted = False
         self.stack = [200, 200]
         self.num_of_actions = [0, 0]
         self.position = [0, 1] # who is in position???
