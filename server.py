@@ -1,12 +1,15 @@
 import socket
 from _thread import *
 import pickle
-#from Game import some shizzle
+from game import Game
 
 server = "118.138.23.2" # replace this with your ipv4 address to test, also replace in network.py
 port = 5050
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+gameData = Game() # create an instance of game called gameData, which contains all gamedata
+
+
 
 try:
     s.bind((server, port))
@@ -26,15 +29,26 @@ def threaded_client(conn, player):
                 break
             else:
                 if data == "reset":
-                    print("data says reset")
-                elif data != "get":
-                    print("some thing happen :?")
-                    
-                
-                print("Received:", data)
-                print("Responding with:", reply)
-
-            conn.sendall(pickle.dumps(reply))
+                    pass ####NEED TO INITIALISE ALL VALUES
+                elif data == "halfPotBet":
+                    betsize = round(int(gameData.pot)/2)
+                    gameData.betting(player,2,betsize)
+                elif data == "fullPotBet":
+                    betsize = int(gameData.pot)
+                    gameData.betting(player,2,betsize)
+                elif data == "allIn":
+                    betsize = gameData.stack[player]
+                    gameData.allin[player] = 1 # changing value in game object
+                    gameData.betting(player,2,betsize)
+                elif data == "check":
+                    gameData.betting(player,1)
+                elif data == "fold":
+                    gameData.betting(player,3)
+                elif data != "pull_request":
+                    pass
+    
+            
+            conn.sendall(pickle.dumps(gameData))
         except:
             break
 
@@ -48,4 +62,7 @@ while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
     start_new_thread(threaded_client, (conn, p))
+    if p == 1:
+        gameData.connected = True
     p+=1
+
