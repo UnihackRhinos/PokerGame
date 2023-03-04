@@ -30,6 +30,10 @@ def threaded_client(conn, player):
             else:
                 if data == "reset":
                     pass ####NEED TO INITIALISE ALL VALUES
+                elif data == "preflop":
+                    if not gameData.handstarted:
+                        gameData.handstarted = True # changing value in game object
+                        gameData.deal()
                 elif data == "halfPotBet":
                     betsize = round(int(gameData.pot)/2)
                     gameData.betting(player,2,betsize)
