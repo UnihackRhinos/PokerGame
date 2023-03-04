@@ -219,6 +219,7 @@ class Game:
         self.runout = []
         self.hand = [[], []]
         self.handstarted = False
+        self.flopstarted = False
         self.stack = [200, 200]
         self.num_of_actions = [0, 0]
         self.position = [0, 1]  # who is in position???
@@ -227,6 +228,8 @@ class Game:
         self.committed = 0
         self.owed = [0, 0]
         self.betting_round = 0
+        self.turnstarted = False
+        self.riverstarted = False
         player_has_folded = False
 
     bigblind = 20
@@ -248,6 +251,7 @@ class Game:
             self.deck.pop(the_int)
 
     def flop(self):
+        self.flopstarted = True
         for i in range(3):
             the_int = random.randint(0, len(self.deck) - 1)
             rand_card = self.deck[the_int]
@@ -255,12 +259,14 @@ class Game:
             self.deck.pop(the_int)
 
     def turn(self):
+        self.turnstarted = True
         the_int = random.randint(0, len(self.deck) - 1)
         rand_card = self.deck[the_int]
         self.runout.append(rand_card)
         self.deck.pop(the_int)
 
     def river(self):
+        self.riverstarted = True
         the_int = random.randint(0, len(self.deck) - 1)
         rand_card = self.deck[the_int]
         self.runout.append(rand_card)
@@ -277,7 +283,7 @@ class Game:
             self.committed += self.smallblind
             self.owed[player] = 10
 
-    def betting(self, player, choice, raise_amount=bigblind):
+    def betting(self, player, choice: int, raise_amount=bigblind):
         if self.owed[player]:  # finds out if player is able to call
             if choice == 1:  # if player chooses to call
                 self.committed += self.owed[player]
@@ -285,6 +291,9 @@ class Game:
                 self.pot += self.owed[player]
                 self.owed[player] = 0
                 self.num_of_actions[player] += 1
+                if sum(self.num_of_actions) > 1:
+                    self.handreset()
+                    self.betting_round += 1
             elif choice == 2:  # if player chooses to raise
                 self.committed += raise_amount + self.owed[player]
                 self.stack[player] -= (raise_amount + self.owed[player])
@@ -297,9 +306,14 @@ class Game:
                 self.stack[(player + 1) % 2] += self.pot
                 player_has_folded = True
 
-        elif self.owed[player] == 0 and self.num_of_actions[player] >= 1:  # finds out if player is able to check
+        elif self.owed[player] == 0 and self.num_of_actions[player] < 1:  # finds out if player is able to check
             if choice == 1:
                 self.num_of_actions[player] += 1
+                if sum(self.num_of_actions) == 2:
+                    self.handreset()
+                    self.betting_round += 1
+
+
 
             elif choice == 2:  # if player chooses to raise
                 self.committed += raise_amount + self.owed[player]
@@ -316,14 +330,25 @@ class Game:
         else:
             self.betting_round += 1
 
-    def play_game(self):
-            self.blinds(0)
-            self.deal()
-            self.flop()
-            self.turn()
-            self.river()
-            print(self.hand[0][0].name)
+    def handreset(self):
+        self.num_of_actions = [0,0]
 
-game1 = Game().play_game()
-game1
+    def reset(self):
+        self.allin = [0, 0]
+        self.ready = False
+        self.deck = self.Deck().cards
+        self.runout = []
+        self.hand = [[], []]
+        self.handstarted = False
+        self.flopstarted = False
+        self.num_of_actions = [0, 0]
+        self.position = [(self.postion[0] + 1) % 2, (self.postion[1] + 1) % 2 ]  # who is in position???
+        self.pot = 0
+        self.hand_over = False
+        self.committed = 0
+        self.owed = [0, 0]
+        self.betting_round = 0
+        self.turnstarted = False
+        self.riverstarted = False
+        player_has_folded = False
 
