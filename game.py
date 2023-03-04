@@ -161,7 +161,9 @@ class Game:
         # print(repitions)
         return score
 
+    winner = 0
     def FindWinner(self, hand_1, hand_2):
+        self.winnerchecked = True
         player = 0
         hand_num = 0
         win_hand = []
@@ -169,10 +171,12 @@ class Game:
         if hand_1[0] != hand_2[0]:
             if hand_1[0] > hand_2[0]:
                 player = 1
+                winner = 1
                 win_hand = hand_1
                 hand_num = hand_1[0]
             elif hand_1[0] < hand_2[0]:
                 player = 2
+                winner = 2
                 win_hand = hand_2
                 hand_num = hand_2[0]
         else:
@@ -180,10 +184,12 @@ class Game:
             while i < len(hand_1):
                 if hand_1[i].value > hand_2[i].value:
                     player = 1
+                    winner = 1
                     win_hand = hand_1
                     hand_num = hand_1[0]
                 elif hand_1[i].value < hand_2[i].value:
                     player = 2
+                    winner = 2
                     win_hand = hand_2
                     hand_num = hand_2[0]
                 i += 1
@@ -230,6 +236,7 @@ class Game:
         self.betting_round = 0
         self.turnstarted = False
         self.riverstarted = False
+        self.winnerchecked = False
         player_has_folded = False
 
     bigblind = 20
