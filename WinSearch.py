@@ -35,11 +35,12 @@ class Deck:
                 val += 1
             suit_num += 1
 
-deck = Deck().cards
+
+
 runout = []
 p1_hand = []
 p2_hand = []
-def deal():
+def deal(deck):
     for i in range(2):
         the_int = random.randint(0, len(deck)-1)
         rand_card = deck[the_int]
@@ -51,20 +52,20 @@ def deal():
         p2_hand.append(rand_card)
         deck.pop(the_int)
 
-def flop():
+def flop(deck):
     for i in range(3):
         the_int = random.randint(0, len(deck)-1)
         rand_card = deck[the_int]
         runout.append(rand_card)
         deck.pop(the_int)
 
-def turn():
+def turn(deck):
     the_int = random.randint(0, len(deck)-1)
     rand_card = deck[the_int]
     runout.append(rand_card)
     deck.pop(the_int)
 
-def river():
+def river(deck):
     the_int = random.randint(0, len(deck)-1)
     rand_card = deck[the_int]
     runout.append(rand_card)
@@ -189,6 +190,7 @@ def BestHand(hand, runout):
             if card.value != pairs[0] and card.value != pairs[1]:
                 score.append(card)
                 return score
+    print("error")
     return score
 
 def FindWinner(hand_1, hand_2):
@@ -255,8 +257,11 @@ def betting():
 def play_round():
     for i in range(50):
         #input("Are you ready to play poker? ")
-
-        deal()
+        pile = Deck().cards
+        p1_hand.clear()
+        p2_hand.clear()
+        runout.clear()
+        deal(pile)
 
         print("Player 1's hand")
         output = ""
@@ -272,7 +277,7 @@ def play_round():
         output = ""
 
         #time.sleep(3)
-        flop()
+        flop(pile)
         print('')
 
         print('The Flop')
@@ -282,7 +287,7 @@ def play_round():
         output = ""
 
         #time.sleep(3)
-        turn()
+        turn(pile)
         print('')
 
         print('The Turn')
@@ -292,7 +297,7 @@ def play_round():
         output = ""
 
         #time.sleep(3)
-        river()
+        river(pile)
         print('')
 
         print('The River')
@@ -309,9 +314,9 @@ class Player():
         self.money = money
 
 
-play_round()
 
-#TESTING
+play_round()
+#Testing
 #flush = []
 #flush.append(Card("Hearts", "Five", 4, 2))
 #flush.append(Card("Clubs", "Six", 5, 0))
