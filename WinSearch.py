@@ -90,18 +90,20 @@ def BestHand(hand, runout):
                 else:
                     cnt += 1
             hand_1.sort(key=lambda x: x.value)     #Sort cards of similar suit
-            score.append(hand_1[len(hand_1)])  #Highest card in flush
             isStraight= True    
             for i in range(len(hand_1) - 1):   
                 if abs(hand_1[i].value - hand_1[i+1].value) != 1:      #if  not consecutive numbers --> flush
                     isStraight = False
             if isStraight:
             #Straight Flush (9, highest card)
-                score.insert(0, 9)
+                score.append(9)
+                score.append(hand_1[len(hand_1)-1])  #Highest card in flush
                 return score
             else:
             #Flush (not straight)   (6, highest card)   
-                score.insert(0, 6) 
+                score.append(6) 
+                for card in hand_1:
+                    score.insert(1, card)
     hand_1.sort(reverse=True, key=lambda x: x.value)
             
 
@@ -151,13 +153,17 @@ def BestHand(hand, runout):
     for i in range(len(hand_1)-1):
         if abs(hand_1[i].value - hand_1[i+1].value) == 1:      #if  not consecutive numbers --> high card
             isStraight += 1
-            highest = hand_1[i]
         else:
+            highest = hand_1[i+1]
             isStraight = 0
     if isStraight >= 4:
         #Straight   (5, highest card)
-        score = [5, hand_1[0]]        
+        score = [5, highest]        
         return score
+
+    if len(score) > 0:
+        if score[0] == 4:
+            return score
 
     if repitions[most][1] == 1:
             #High card  (1, cards from high to low)
@@ -184,13 +190,13 @@ def BestHand(hand, runout):
                     return score
 
     #Two pair   (3, pair numbers, next highest card)
-    if len(pairs) == 2:
+    if len(pairs) >= 2:
         score = [3, repitions[pairs[0]][0], repitions[pairs[1]][0]]
         for card in hand_1:
             if card.value != pairs[0] and card.value != pairs[1]:
                 score.append(card)
                 return score
-    print("error")
+    #print(repitions)
     return score
 
 def FindWinner(hand_1, hand_2):
@@ -214,10 +220,12 @@ def FindWinner(hand_1, hand_2):
                 player = 1
                 win_hand = hand_1
                 hand_num = hand_1[0]
+                break
             elif hand_1[i].value < hand_2[i].value:
                 player = 2
                 win_hand = hand_2
                 hand_num = hand_2[0]
+                break
             i += 1
 
     if player == 0:
@@ -307,6 +315,7 @@ def play_round():
 
         print('')
         print(FindWinner(BestHand(p1_hand, runout), BestHand(p2_hand, runout)))
+        print("~~~")
     
 class Player():
     def __init__(self, name, money=500):
@@ -315,8 +324,7 @@ class Player():
 
 
 
-play_round()
-#Testing
+
 #flush = []
 #flush.append(Card("Hearts", "Five", 4, 2))
 #flush.append(Card("Clubs", "Six", 5, 0))
@@ -327,3 +335,4 @@ play_round()
 #hand.append(Card("Spades", "Nine", 8, 1))
 #hand.append(Card("Diamonds", "Ten", 9, 3))
 #print(BestHand(flush, hand))
+play_round()
