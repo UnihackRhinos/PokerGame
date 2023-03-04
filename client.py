@@ -3,8 +3,8 @@ from network import Network
 import sys
 import time
 
-def winLosePrint(win, potSize):
-    if win:
+def winLosePrint(player, win, potSize):
+    if player == (win - 1) :
         text = font.render("you won " + potSize, True, (255,255,255))
     else:
         if potSize >0 <20:
@@ -15,6 +15,9 @@ def winLosePrint(win, potSize):
             text = font.render("you lost a full tank of petrol", True, (255,255,255))
         elif potSize >99 <250:
             text = font.render("you lost about a weeks rent", True, (255,255,255))
+            textRect = text.get_rect(topleft=(350,350))
+            screen.blit(text, textRect)
+            pygame.draw.rect(screen, (255,0,0),textRect)
         elif potSize >249 <500:
             text = font.render("you lost two eight hour shifts at maccas pay", True, (255,255,255))
         elif potSize >499 <999:
@@ -143,9 +146,15 @@ def main():
         if mackasRules.betting_round == 1:
             net.send("flop")
         if mackasRules.betting_round == 2:
+            print("not mitch's fault")
             net.send("turn")
         if mackasRules.betting_round == 3:
             net.send("river")
+        if mackasRules.betting_round == 4:
+            net.send("winner")
+            time.sleep(0.1)
+            winLosePrint(player, mackasRules.winner, mackasRules.pot)
+
         # read who's turn it is to act
         if mackasRules.num_of_actions[player] == mackasRules.num_of_actions[(player + 1) % 2]:
             toAct = mackasRules.position[player]
@@ -159,20 +168,14 @@ def main():
         # read the cards in players hand and those on the board
         if len(mackasRules.runout):
             for i in range(len(mackasRules.runout)):
-                run = mackasRules.runout[i]
-                run = run.split(" of ")
-                displayCard(run[0],run[1], 108+77*i, 142)
+                displayCard(mackasRules.runout[i].name,mackasRules.runout[i].suit, 108+85*i, 145)
         else:
             net.send("preflop")
             time.sleep(0.1)
 
         mackasRules = net.send("pull_request")
-        hand1 = mackasRules.hand[player][0]
-        hand1 = hand1.split(" of ")
-        hand2 = mackasRules.hand[player][1]
-        hand2 = hand2.split(" of ")
-        displayCard(hand1[0], hand1[1], 230, 340)
-        displayCard(hand2[0], hand2[1], 310, 340)
+        displayCard(mackasRules.hand[player][0].name, mackasRules.hand[player][0].suit, 230, 340)
+        displayCard(mackasRules.hand[player][1].name, mackasRules.hand[player][1].suit, 310, 340)
         #displayCard(mackasRules.hand[player][1].suit, mackasRules.hand[player][1].value, 230, 340)
         #updateHUD(str(1000), "1000", "0")
         #displayCard("Ace", "Spades", 108, 142)
