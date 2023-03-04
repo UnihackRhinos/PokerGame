@@ -3,7 +3,7 @@ from _thread import *
 import pickle
 from game import Game
 
-server = "118.138.23.2" # replace this with your ipv4 address to test, also replace in network.py
+server = "118.138.91.21" # replace this with your ipv4 address to test, also replace in network.py
 port = 5050
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -34,26 +34,38 @@ def threaded_client(conn, player):
                     if not gameData.handstarted:
                         gameData.handstarted = True # changing value in game object
                         gameData.deal()
+                        print("Hand dealt")
+                        print(gameData.hand)
                 elif data == "halfPotBet":
                     betsize = round(int(gameData.pot)/2)
                     gameData.betting(player,2,betsize)
                 elif data == "fullPotBet":
                     betsize = int(gameData.pot)
+                    print(betsize)
                     gameData.betting(player,2,betsize)
+                    print(gameData.num_of_actions)
+
+
+
                 elif data == "allIn":
                     betsize = gameData.stack[player]
                     gameData.allin[player] = 1 # changing value in game object
+                    gameData.stack[player] = 0 # changing value in game object remove later
                     gameData.betting(player,2,betsize)
+                    print("gone all in (coolface)")
                 elif data == "check":
                     gameData.betting(player,1)
                 elif data == "fold":
                     gameData.betting(player,3)
+                elif data == "flop":
+                    if not gameData.flopstarted:
+                        gameData.flop()
                 elif data != "pull_request":
                     pass
     
-            
             conn.sendall(pickle.dumps(gameData))
         except:
+            print("something went wrong")
             break
 
     print("Lost connection")
@@ -69,4 +81,3 @@ while True:
     if p == 1:
         gameData.connected = True
     p+=1
-
