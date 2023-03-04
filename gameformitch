@@ -54,10 +54,11 @@ class Game:
         self.runout = []
         self.hand = [[], []]
         self.handstarted = False
+        self.flopstarted = False
         self.stack = [200, 200]
         self.num_of_actions = [0, 0]
-        self.position = [0, 1] # who is in position???
-        self.pot = 0
+        self.position = [1, 0] # who is in position???
+        self.pot = 10
         self.hand_over = False
         self.committed = 0
         self.owed = [0, 0]
@@ -69,9 +70,12 @@ class Game:
 
 
     def connected(self): #determine if client has connected
+        
         return self.ready
 
     def deal(self):
+        self.pot += 20
+        print("test")
         for i in range(2):
             the_int = random.randint(0, len(self.deck) - 1)
             rand_card = self.deck[the_int]
@@ -83,12 +87,13 @@ class Game:
             self.hand[1].append(rand_card)
             self.deck.pop(the_int)
 
-    # def flop(self):
-    #     for i in range(3):
-    #         the_int = random.randint(0, len(self.deck) - 1)
-    #         rand_card = self.deck[the_int]
-    #         self.runout.append(rand_card)
-    #         self.deck.pop(the_int)
+    def flop(self):
+        self.flopstarted = True
+        for i in range(3):
+            the_int = random.randint(0, len(self.deck) - 1)
+            rand_card = self.deck[the_int]
+            self.runout.append(rand_card)
+            self.deck.pop(the_int)
 
     # def turn(self):
     #     the_int = random.randint(0, len(self.deck) - 1)
@@ -114,41 +119,56 @@ class Game:
             self.owed[player] = 10
 
     def betting(self, player, choice, raise_amount = bigblind):
+        print(self.owed[player])
         if self.owed[player]:  # finds out if player is able to call
-            if choice == 1:     #if player chooses to call
+            if int(choice) == 1:     #if player chooses to call
                 self.committed += self.owed[player]
                 self.stack[player] -= self.owed[player]
                 self.pot += self.owed[player]
                 self.owed[player] = 0
                 self.num_of_actions[player] += 1
-            elif choice == 2:   #if player chooses to raise
+                if sum(self.num_of_actions)>1:
+                    self.betting_round += 1
+                    print("lets see a flop")
+
+
+
+
+            elif int(choice) == 2:   #if player chooses to raise
+                print("bet")
                 self.committed += raise_amount + self.owed[player]
                 self.stack[player] -= (raise_amount + self.owed[player])
                 self.pot += raise_amount + self.owed[player]
                 self.owed[player] = 0
                 self.owed[(player + 1) % 2] = raise_amount
                 self.num_of_actions[player] += 1
-            elif choice == 3:   #if player chooses to fold
+            elif int(choice) == 3:   #if player chooses to fold
                 self.hand_over = True
                 player_has_folded = True
 
-        elif self.owed[player] == 0 and self.num_of_actions[player] >= 1:  # finds out if player is able to check
-            if choice == 1:
+        elif self.owed[player] == 0 and self.num_of_actions[player] < 1:  # finds out if player is able to check
+            if int(choice) == 1:
                 self.num_of_actions[player] += 1
+                if sum(self.num_of_actions)==2:
+                    self.betting_round += 1
+                    print("lets see a flop")
 
-            elif choice == 2:  # if player chooses to raise
+    
+            elif int(choice) == 2:  # if player chooses to raise
+                print("bet")
                 self.committed += raise_amount + self.owed[player]
                 self.stack[player] -= (raise_amount + self.owed[player])
                 self.pot += raise_amount + self.owed[player]
                 self.owed[player] = 0
                 self.owed[(player + 1) % 2] = raise_amount
                 self.num_of_actions[player] += 1
-            elif choice == 3:  # if player chooses to fold
+            elif int(choice) == 3:  # if player chooses to fold
                 self.hand_over = True
                 player_has_folded = True
 
         else:
             self.betting_round += 1
+            print("lets see a flop")
 
 
     # def play_game(self):
