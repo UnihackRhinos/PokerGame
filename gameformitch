@@ -47,9 +47,9 @@ class Game:
         # CODY COde
 
 
-    def __init__(self, player):
+    def __init__(self):
+        self.allin = [0,0]
         self.ready = False
-        self.player = player
         self.deck = self.Deck().cards
         self.runout = []
         self.hand = [[], []]
@@ -61,7 +61,7 @@ class Game:
         self.committed = 0
         self.owed = [0, 0]
         self.betting_round = 0
-        self.player_has_folded = False
+        player_has_folded = False
         
     bigblind = 20
     smallblind = 10
@@ -101,50 +101,50 @@ class Game:
     #     self.runout.append(rand_card)
     #     self.deck.pop(the_int)
 
-    def blinds(self):
-        if self.position[self.player] == 0:  # not dealer and bigblind
+    def blinds(self,player):
+        if self.position[player] == 0:  # not dealer and bigblind
             self.pot += self.bigblind
-            self.stack[self.player] -= self.bigblind
+            self.stack[player] -= self.bigblind
             self.committed += self.bigblind
-        elif self.position[self.player] == 1:  # is dealer and smallblind
+        elif self.position[player] == 1:  # is dealer and smallblind
             self.pot += self.smallblind
-            self.stack[self.player] -= self.smallblind
+            self.stack[player] -= self.smallblind
             self.committed += self.smallblind
-            self.owed[self.player] = 10
+            self.owed[player] = 10
 
-    def betting(self, choice, raise_amount = bigblind):
-        if self.owed[self.player]:  # finds out if player is able to call
+    def betting(self, player, choice, raise_amount = bigblind):
+        if self.owed[player]:  # finds out if player is able to call
             if choice == 1:     #if player chooses to call
-                self.committed += self.owed[self.player]
-                self.stack[self.player] -= self.owed[self.player]
-                self.pot += self.owed[self.player]
-                self.owed[self.player] = 0
-                self.num_of_actions[self.player] += 1
+                self.committed += self.owed[player]
+                self.stack[player] -= self.owed[player]
+                self.pot += self.owed[player]
+                self.owed[player] = 0
+                self.num_of_actions[player] += 1
             elif choice == 2:   #if player chooses to raise
-                self.committed += raise_amount + self.owed[self.player]
-                self.stack[self.player] -= (raise_amount + self.owed[self.player])
-                self.pot += raise_amount + self.owed[self.player]
-                self.owed[self.player] = 0
-                self.owed[(self.player + 1) % 2] = raise_amount
-                self.num_of_actions[self.player] += 1
+                self.committed += raise_amount + self.owed[player]
+                self.stack[player] -= (raise_amount + self.owed[player])
+                self.pot += raise_amount + self.owed[player]
+                self.owed[player] = 0
+                self.owed[(player + 1) % 2] = raise_amount
+                self.num_of_actions[player] += 1
             elif choice == 3:   #if player chooses to fold
                 self.hand_over = True
-                self.player_has_folded = True
+                player_has_folded = True
 
-        elif self.owed[self.player] == 0 and self.num_of_actions[self.player] >= 1:  # finds out if player is able to check
+        elif self.owed[player] == 0 and self.num_of_actions[player] >= 1:  # finds out if player is able to check
             if choice == 1:
-                self.num_of_actions[self.player] += 1
+                self.num_of_actions[player] += 1
 
             elif choice == 2:  # if player chooses to raise
-                self.committed += raise_amount + self.owed[self.player]
-                self.stack[self.player] -= (raise_amount + self.owed[self.player])
-                self.pot += raise_amount + self.owed[self.player]
-                self.owed[self.player] = 0
-                self.owed[(self.player + 1) % 2] = raise_amount
-                self.num_of_actions[self.player] += 1
+                self.committed += raise_amount + self.owed[player]
+                self.stack[player] -= (raise_amount + self.owed[player])
+                self.pot += raise_amount + self.owed[player]
+                self.owed[player] = 0
+                self.owed[(player + 1) % 2] = raise_amount
+                self.num_of_actions[player] += 1
             elif choice == 3:  # if player chooses to fold
                 self.hand_over = True
-                self.player_has_folded = True
+                player_has_folded = True
 
         else:
             self.betting_round += 1
