@@ -9,7 +9,7 @@ def displayCard(rank, suit, xcoord, ycoord):
     # xcoord/ycoord- location of top left of image
     # function takes two strings and combines them to 
     # create an image name to then display in a given location 
-    cardFile = rank + suit + ".png"
+    cardFile = 'Card images\\' + rank + suit + ".png"
     card = pygame.image.load(cardFile).convert_alpha()
     # ----------------------------------------------
     #  locations of cards pixel wise
@@ -104,7 +104,7 @@ def main():
     while running:
         x, y = pygame.mouse.get_pos()
         updateHUD("100", "100", "10")
-        displayCard("ace", "Spades", 108, 142)
+        displayCard("Ace", "Spades", 108, 142)
         displayCard("Ace", "Diamonds", 190, 142)
         displayCard("Queen", "Hearts", 275, 142)
         displayCard("King", "Hearts", 355, 142)
