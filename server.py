@@ -29,7 +29,7 @@ def threaded_client(conn, player):
                 break
             else:
                 if data == "reset":
-                    pass ####NEED TO INITIALISE ALL VALUES
+                    gameData.reset()
                 elif data == "preflop":
                     if not gameData.handstarted:
                         gameData.handstarted = True # changing value in game object
@@ -69,6 +69,11 @@ def threaded_client(conn, player):
                 elif data == "river":
                     if not gameData.riverstarted:
                         gameData.river()
+
+
+                elif data == "winner":
+                    if not gameData.winnerchecked:
+                        gameData.FindWinner(gameData.BestHand(gameData.hand[0],gameData.runout),gameData.BestHand(gameData.hand[1],gameData.runout))
                 
                 
                 elif data != "pull_request":
