@@ -45,18 +45,18 @@ def displayCard(rank, suit, xcoord, ycoord):
 
 def updateHUD(playerStack, oppStack, pot):
     playerText = font.render("stack: " + playerStack, True, (255,255,255))
-    playerRect = pygame.Rect(220,350,80,50) #Rect(left, top, width, height)
-    pygame.draw.rect(screen, (0,0,255),playerRect) # draw rectangle first so it doesn't cover text
+    playerRect = pygame.Rect(500,350,80,50) #Rect(left, top, width, height)
+    pygame.draw.rect(screen, (90,150,0),playerRect) # draw rectangle first so it doesn't cover text
     screen.blit(playerText, playerRect)
 
     oppText = font.render("stack: " + oppStack, True, (255,255,255))
-    oppRect = pygame.Rect(220, 10, 80, 50)
-    pygame.draw.rect(screen, (0,0,255),oppRect)
+    oppRect = pygame.Rect(500, 10, 80, 50)
+    pygame.draw.rect(screen, (255,0,0),oppRect)
     screen.blit(oppText, oppRect)
 
     potText = font.render("pot: " + pot, True, (255,255,255))
-    potRect = pygame.Rect(220, 100, 80, 40)
-    pygame.draw.rect(screen, (255,0,0),potRect)
+    potRect = pygame.Rect(500, 100, 80, 40)
+    pygame.draw.rect(screen, (0,0,255),potRect)
     screen.blit(potText, potRect)
 
 def loadButtons(conditions):
@@ -65,20 +65,28 @@ def loadButtons(conditions):
         screen.blit(betButtonText, betButtonRect)
         screen.blit(callButtonText, callButtonRect)
         screen.blit(foldButtonText, foldButtonRect)
+        screen.blit(fullPotButtonText, fullPotButtonRect)
+        screen.blit(allInButtonText, allInButtonRect)
 
         pygame.draw.rect(screen, (0,255,0),betButtonRect,2)
         pygame.draw.rect(screen, (0,255,0),callButtonRect,2)
         pygame.draw.rect(screen, (0,255,0),foldButtonRect,2)
+        pygame.draw.rect(screen, (0,255,0),fullPotButtonRect,2)
+        pygame.draw.rect(screen, (0,255,0),allInButtonRect,2)
         #update display
         pygame.display.flip()
     else: # bet check fold
         screen.blit(betButtonText, betButtonRect)
         screen.blit(checkButtonText, checkButtonRect)
         screen.blit(foldButtonText, foldButtonRect)
+        screen.blit(fullPotButtonText, fullPotButtonRect)
+        screen.blit(allInButtonText, allInButtonRect)
 
         pygame.draw.rect(screen, (0,255,0),betButtonRect,2)
         pygame.draw.rect(screen, (0,255,0),checkButtonRect,2)
         pygame.draw.rect(screen, (0,255,0),foldButtonRect,2)
+        pygame.draw.rect(screen, (0,255,0),fullPotButtonRect,2)
+        pygame.draw.rect(screen, (0,255,0),allInButtonRect,2)
         #update display
         pygame.display.flip()
 
@@ -99,14 +107,18 @@ pygame.display.set_caption('Funny Fellows Poker')
 font = pygame.font.SysFont('lucidasans', 15)
 
 # defining buttons
-betButtonText = font.render(" Bet ", True, (0,0,0))
-betButtonRect = betButtonText.get_rect(topleft=(90,350))
+betButtonText = font.render(" Bet 1/2 Pot ", True, (0,0,0))
+betButtonRect = betButtonText.get_rect(topleft=(20,80))
+fullPotButtonText = font.render(" Bet Pot ", True, (0,0,0))
+fullPotButtonRect = fullPotButtonText.get_rect(topleft=(20,110))
+allInButtonText = font.render(" All In ", True, (0,0,0))
+allInButtonRect = allInButtonText.get_rect(topleft=(20,140))
 checkButtonText = font.render(" Check ", True, (0,0,0))
-checkButtonRect = checkButtonText.get_rect(topleft=(20,350))
+checkButtonRect = checkButtonText.get_rect(topleft=(20,50))
 callButtonText = font.render(" Call ", True, (0,0,0))
-callButtonRect = callButtonText.get_rect(topleft=(20,350))
+callButtonRect = callButtonText.get_rect(topleft=(20,50))
 foldButtonText = font.render(" Fold ", True, (0,0,0))
-foldButtonRect = foldButtonText.get_rect(topleft=(140,350))
+foldButtonRect = foldButtonText.get_rect(topleft=(20,20))
 printout = " "
 
 def main():
@@ -124,6 +136,7 @@ def main():
     
     while running:
         x, y = pygame.mouse.get_pos()
+        mackasRules = net.send("pull_request") #pull request, where everything is stored
         updateHUD("100", "100", "10")
         displayCard("Ace", "Spades", 108, 142)
         displayCard("Ace", "Diamonds", 190, 142)
@@ -142,12 +155,23 @@ def main():
                     if betButtonRect.collidepoint(event.pos):
                         screen.blit(bg, (0, 0)) # sets background to bg image
                         toAct = 0
+                        net.send("halfPotBet") # request
+                    if fullPotButtonRect.collidepoint(event.pos):
+                        screen.blit(bg, (0, 0)) # sets background to bg image
+                        toAct = 0
+                        net.send("fullPotBet") # request
+                    if allInButtonRect.collidepoint(event.pos):
+                        screen.blit(bg, (0, 0)) # sets background to bg image
+                        toAct = 0
+                        net.send("allIn") # request
                     if checkButtonRect.collidepoint(event.pos):
                         screen.blit(bg, (0, 0)) # sets background to bg image
                         toAct = 0
+                        net.send("check") #request
                     if foldButtonRect.collidepoint(event.pos):
                         screen.blit(bg, (0, 0)) # sets background to bg image
                         toAct = 0
+                        net.send("fold") #request
 
 
         pygame.display.update()
