@@ -33,6 +33,7 @@ def threaded_client(conn, player):
                 elif data == "preflop":
                     if not gameData.handstarted:
                         gameData.handstarted = True # changing value in game object
+                        gameData.blinds(player)
                         gameData.deal()
                         print("Hand dealt")
                         print(gameData.hand)
@@ -60,6 +61,16 @@ def threaded_client(conn, player):
                 elif data == "flop":
                     if not gameData.flopstarted:
                         gameData.flop()
+                
+                elif data == "turn":
+                    if not gameData.turnstarted:
+                        gameData.turn()
+                        
+                elif data == "river":
+                    if not gameData.riverstarted:
+                        gameData.river()
+                
+                
                 elif data != "pull_request":
                     pass
     
