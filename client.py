@@ -2,6 +2,26 @@ import pygame
 from network import Network
 import sys
 
+def winLosePrint(win, potSize):
+    if win:
+        text = font.render("you won " + potSize, True, (255,255,255))
+    else:
+        if potSize >0 <20:
+            text = font.render("you lost your on campus lunch money", True, (255,255,255))
+        elif potSize >19 <50:
+            text = font.render("you lost money to buy groceries", True, (255,255,255))
+        elif potSize >49 <100:
+            text = font.render("you lost a full tank of petrol", True, (255,255,255))
+        elif potSize >99 <250:
+            text = font.render("you lost about a weeks rent", True, (255,255,255))
+        elif potSize >249 <500:
+            text = font.render("you lost two eight hour shifts at maccas pay", True, (255,255,255))
+        elif potSize >499 <999:
+            text = font.render("you lost enough money to get a new laptop, call 1800 858 858 if you need help with gambling", True, (255,255,255))
+            screen.blit(text, (250,300))
+
+
+
 def displayCard(rank, suit, xcoord, ycoord):
     # displayCard(rank, suit)
     # rank- the cards value ace to king
@@ -100,6 +120,7 @@ def main():
     print("you are player: ",player)
     toAct = [0,0]
     loadButtons(0)
+    winLosePrint(0, 600)
     
     while running:
         x, y = pygame.mouse.get_pos()
