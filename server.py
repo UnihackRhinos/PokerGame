@@ -42,6 +42,7 @@ def threaded_client(conn, player):
                     gameData.turnstarted = False
                     gameData.riverstarted = False
                     gameData.num_of_actions = [0, 0]
+                    gameData.winnerchecked = False
                     #gameData.position = [(gameData.postion[0] + 1) % 2, (gameData.postion[1] + 1) % 2 ]  # who is in position???
                     gameData.pot = 0
                     gameData.hand_over = False
