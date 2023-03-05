@@ -233,7 +233,7 @@ class Game:
         self.betting_round = 0
         self.turnstarted = False
         self.riverstarted = False
-        player_has_folded = False
+        self.player_has_folded = [0,0]
 
     bigblind = 20
     smallblind = 10
@@ -312,7 +312,7 @@ class Game:
             elif choice == 3:  # if player chooses to fold
                 self.hand_over = True
                 self.stack[(player + 1) % 2] += self.pot
-                player_has_folded = True
+                self.player_has_folded[player] = 1
 
         elif self.owed[player] == 0 and self.num_of_actions[player] < 1:  # finds out if player is able to check
             if choice == 1:
@@ -335,7 +335,7 @@ class Game:
             elif choice == 3:  # if player chooses to fold
                 self.hand_over = True
                 self.stack[(player + 1) % 2] += self.pot
-                player_has_folded = True
+                self.player_has_folded[player] = 1
 
         else:
             self.betting_round += 1
@@ -350,7 +350,6 @@ class Game:
         else:
             self.stack[player] += self.pot / 2
             self.stack[(player + 1) % 2] += self.pot / 2
-        print('yo')
 
 
 
@@ -373,5 +372,4 @@ class Game:
         self.betting_round = 0
         self.turnstarted = False
         self.riverstarted = False
-        player_has_fold
-
+        self.player_has_folded = [0,0]
