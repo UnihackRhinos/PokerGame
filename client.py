@@ -24,7 +24,6 @@ def winLosePrint(player, win, potSize):
     textRect = text.get_rect(topleft=(130,300))
     pygame.draw.rect(screen, (0,0,0),textRect)
     screen.blit(text, textRect)
-    # display who won with what cards at (120,110)
 
 
 
@@ -146,12 +145,21 @@ def main():
     while running:
         x, y = pygame.mouse.get_pos()
         mackasRules = net.send("pull_request") #pull request, where everything is stored
-        #if mackasRules.player_has_folded[player]:
-            # end the hand early, player who folded loses automatically
-            #winLosePrint(player, mackasRules.position[player],mackasRules.pot)
-            #displayCard(mackasRules.hand[(player + 1) % 2][0].name, mackasRules.hand[(player + 1) % 2][0].suit, 230, -50)
-            #displayCard(mackasRules.hand[(player + 1) % 2][1].name, mackasRules.hand[(player + 1) % 2][1].suit, 310, -50)
+        if mackasRules.player_has_folded[0]:
+            #end the hand early, player who folded loses automatically
+            foldWin = 1
+            winLosePrint(player, foldWin, mackasRules.pot)
+            displayCard(mackasRules.hand[(player + 1) % 2][0].name, mackasRules.hand[(player + 1) % 2][0].suit, 230, -50)
+            displayCard(mackasRules.hand[(player + 1) % 2][1].name, mackasRules.hand[(player + 1) % 2][1].suit, 310, -50)
             #mackasRules.position[player]
+        if mackasRules.player_has_folded[1]:
+            #end the hand early, player who folded loses automatically
+            foldWin = 0
+            winLosePrint(player, foldWin, mackasRules.pot)
+            displayCard(mackasRules.hand[(player + 1) % 2][0].name, mackasRules.hand[(player + 1) % 2][0].suit, 230, -50)
+            displayCard(mackasRules.hand[(player + 1) % 2][1].name, mackasRules.hand[(player + 1) % 2][1].suit, 310, -50)
+            screen.blit(resetButtonText, resetButtonRect)
+            pygame.draw.rect(screen, (0,255,0),resetButtonRect,2)
 
         # check if it's time to flop, turn, river
         if mackasRules.betting_round == 1:
@@ -172,6 +180,11 @@ def main():
             # show the opponents cards
             displayCard(mackasRules.hand[(player + 1) % 2][0].name, mackasRules.hand[(player + 1) % 2][0].suit, 230, -50)
             displayCard(mackasRules.hand[(player + 1) % 2][1].name, mackasRules.hand[(player + 1) % 2][1].suit, 310, -50)
+            winna = mackasRules.FindWinner(mackasRules.BestHand(mackasRules.hand[0],mackasRules.runout),mackasRules.BestHand(mackasRules.hand[1],mackasRules.runout))
+            winHandText = font.render(winna , True, (255,255,255))
+            winHandRect = pygame.Rect(120,100,350,30) #Rect(left, top, width, height)
+            pygame.draw.rect(screen, (0,0,0),winHandRect) # draw rectangle first so it doesn't cover text
+            screen.blit(winHandText, winHandRect)
             screen.blit(resetButtonText, resetButtonRect)
             pygame.draw.rect(screen, (0,255,0),resetButtonRect,2)
 
@@ -194,8 +207,9 @@ def main():
             time.sleep(0.1)
 
         mackasRules = net.send("pull_request")
-        displayCard(mackasRules.hand[player][0].name, mackasRules.hand[player][0].suit, 230, 340)
-        displayCard(mackasRules.hand[player][1].name, mackasRules.hand[player][1].suit, 310, 340)
+        if len(mackasRules.hand[player]):
+            displayCard(mackasRules.hand[player][0].name, mackasRules.hand[player][0].suit, 230, 340)
+            displayCard(mackasRules.hand[player][1].name, mackasRules.hand[player][1].suit, 310, 340)
         #displayCard(mackasRules.hand[player][1].suit, mackasRules.hand[player][1].value, 230, 340)
         #updateHUD(str(1000), "1000", "0")
         #displayCard("Ace", "Spades", 108, 142)
@@ -215,6 +229,7 @@ def main():
                 if resetButtonRect.collidepoint(event.pos):
                         if mackasRules.betting_round == 4 or mackasRules.player_has_folded[0] == 1 or mackasRules.player_has_folded[1]:
                             net.send("reset")
+                            screen.blit(bg, (0, 0)) # sets background to bg image
                 if toAct: # remove to replace with backend deciding when acting
                     # function of each button needs to be connected to backend
                     if betButtonRect.collidepoint(event.pos):
