@@ -4,8 +4,31 @@ import time
 
 
 class Game:
-    winner = 0
+    def __init__(self):
+        self.allin = [0, 0]
+        self.ready = False
+        self.deck = self.Deck().cards
+        self.runout = []
+        self.hand = [[], []]
+        self.handstarted = False
+        self.flopstarted = False
+        self.stack = [200, 200]
+        self.num_of_actions = [0, 0]
+        self.position = [0, 1]  # who is in position???
+        self.pot = 0
+        self.hand_over = False
+        self.committed = 0
+        self.owed = [0, 0]
+        self.betting_round = 0
+        self.turnstarted = False
+        self.riverstarted = False
+        self.player_has_folded = [0,0]
+        self.winnerchecked = False
+        self.winner = 0
+        
 
+    bigblind = 20
+    smallblind = 10
     class Card:
         def __init__(self, suit, name, value, suit_num):
             self.suit = suit
@@ -23,11 +46,11 @@ class Game:
         suits = ["Clubs", "Spades", "Hearts", "Diamonds"]  # 0, 1, 2, 3
         names = ["Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"]
         values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-
         def __init__(self):
             self.cards = []
             self.build()
-            self.winner = 0
+            
+            
 
         def build(self):
             suit_num = 0
@@ -165,6 +188,7 @@ class Game:
         return score
 
     def FindWinner(self, hand_1, hand_2):
+        self.winnerchecked = True
         player = 0
         hand_num = 0
         win_hand = []
@@ -215,28 +239,6 @@ class Game:
 
         return output
 
-    def __init__(self):
-        self.allin = [0, 0]
-        self.ready = False
-        self.deck = self.Deck().cards
-        self.runout = []
-        self.hand = [[], []]
-        self.handstarted = False
-        self.flopstarted = False
-        self.stack = [200, 200]
-        self.num_of_actions = [0, 0]
-        self.position = [0, 1]  # who is in position???
-        self.pot = 0
-        self.hand_over = False
-        self.committed = 0
-        self.owed = [0, 0]
-        self.betting_round = 0
-        self.turnstarted = False
-        self.riverstarted = False
-        self.player_has_folded = [0,0]
-
-    bigblind = 20
-    smallblind = 10
 
     def connected(self):  # determine if client has connected
         return self.ready
@@ -276,15 +278,15 @@ class Game:
         self.deck.pop(the_int)
 
     def blinds(self, player):
-        if self.position[player] == 0:  # not dealer and bigblind
-            self.pot += self.bigblind
-            self.stack[player] -= self.bigblind
-            self.committed += self.bigblind
-        elif self.position[player] == 1:  # is dealer and smallblind
-            self.pot += self.smallblind
-            self.stack[player] -= self.smallblind
-            self.committed += self.smallblind
-            self.owed[player] = 10
+        #if self.position[player] == 0:  # not dealer and bigblind
+        self.pot += self.bigblind
+        self.stack[player] -= self.bigblind
+        self.committed += self.bigblind
+        # elif self.position[player] == 1:  # is dealer and smallblind
+        self.pot += self.smallblind
+        self.stack[(player+1)%2] -= self.smallblind
+        self.committed += self.smallblind
+        self.owed[(player+1)%2] = 10
 
     def betting(self, player, choice: int, raise_amount=bigblind):
         if self.owed[player]:  # finds out if player is able to call
