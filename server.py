@@ -30,7 +30,6 @@ def threaded_client(conn, player):
                 break
             else:
                 if data == "reset":
-                    print("resetting")
                     # gameData.reset()
                     gameData.betting_round = 0
                     gameData.allin = [0, 0]
@@ -48,23 +47,18 @@ def threaded_client(conn, player):
                     gameData.hand_over = False
                     # gameData.committed = 0
                     # gameData.owed = [0, 0]
-                    print("reset")
                     #sleep(0.5)
                 elif data == "preflop":
                     if not gameData.handstarted:
                         gameData.handstarted = True # changing value in game object
                         gameData.blinds(player)
                         gameData.deal()
-                        print("Hand dealt")
-                        print(gameData.hand)
                 elif data == "halfPotBet":
                     betsize = round(int(gameData.pot)/2)
                     gameData.betting(player,2,betsize)
                 elif data == "fullPotBet":
                     betsize = int(gameData.pot)
-                    print(betsize)
                     gameData.betting(player,2,betsize)
-                    print(gameData.num_of_actions)
 
 
 
@@ -73,7 +67,6 @@ def threaded_client(conn, player):
                     gameData.allin[player] = 1 # changing value in game object
                     gameData.stack[player] = 0 # changing value in game object remove later
                     gameData.betting(player,2,betsize)
-                    print("gone all in (coolface)")
                 elif data == "check":
                     gameData.betting(player,1)
                 elif data == "fold":
