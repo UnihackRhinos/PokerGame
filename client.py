@@ -5,21 +5,20 @@ import time
 
 def winLosePrint(player, win, potSize):
     if player == win :
-        text = font.render("you won $" + str(potSize), True, (255,255,255))
-        print("win print function working")
+        text = font.render("You won $" + str(potSize), True, (255,255,255))
     else:
         if potSize > 0 and potSize < 20:
-            text = font.render("you lost your on campus lunch money", True, (255,255,255))
+            text = font.render("You lost your lunch money.", True, (255,255,255))
         elif potSize > 19 and potSize < 50:
-            text = font.render("you lost money to buy groceries", True, (255,255,255))
+            text = font.render("You lost enough money to buy groceries.", True, (255,255,255))
         elif potSize > 49 and potSize < 100:
-            text = font.render("you lost a full tank of petrol", True, (255,255,255))
+            text = font.render("You lost a full tank of petrol.", True, (255,255,255))
         elif potSize > 99 and potSize < 250:
-            text = font.render("you lost about a weeks rent", True, (255,255,255))
+            text = font.render("You lost about a weeks rent.", True, (255,255,255))
         elif potSize > 249 and potSize < 500:
-            text = font.render("you lost two eight hour shifts at maccas pay", True, (255,255,255))
+            text = font.render("You lost two eight-hour shifts worth of maccas pay.", True, (255,255,255))
         elif potSize > 499 and potSize < 2000:
-            text = font.render("you lost enough money to get a new laptop, call 1800 858 858 if you need help with gambling", True, (255,255,255))
+            text = font.render("You lost enough money to get a new laptop, call 1800 858 858.", True, (255,255,255))
     #screen.blit(text, (250,300))
     textRect = text.get_rect(topleft=(130,300))
     pygame.draw.rect(screen, (0,0,0),textRect)
@@ -165,18 +164,15 @@ def main():
         if mackasRules.betting_round == 1:
             net.send("flop")
         if mackasRules.betting_round == 2:
-            print("not mitch's fault")
             net.send("turn")
         if mackasRules.betting_round == 3:
             net.send("river")
         if mackasRules.betting_round == 4:
             net.send("winner")
             time.sleep(0.1)
-            print("mitch has sent his signal")
             #print("player number is: " + str(player))
             #print("winner number is: " + str(mackasRules.winner))
             #print("pot size is: " + str(mackasRules.pot))
-            print("checkpoint")
             winLosePrint(player, mackasRules.winner, mackasRules.pot)
             # show the opponents cards
             displayCard(mackasRules.hand[(player + 1) % 2][0].name, mackasRules.hand[(player + 1) % 2][0].suit, 230, -50)
@@ -195,8 +191,7 @@ def main():
         else:
             toAct = (mackasRules.num_of_actions[player] < mackasRules.num_of_actions[(player + 1) % 2])
         if toAct:
-            print("your turn")
-            print(mackasRules.num_of_actions)
+            print("Your turn")
         # read the stacks and pot and update the display
         updateHUD(str(mackasRules.stack[player]),str(mackasRules.stack[(player + 1) % 2]),str(mackasRules.pot))
         # read the cards in players hand and those on the board
@@ -242,7 +237,6 @@ def main():
                     if allInButtonRect.collidepoint(event.pos):
                         toAct = 0
                         net.send("allIn") # request
-                        print("going all in (not mitch's fault)")
                     if checkButtonRect.collidepoint(event.pos):
                         #toAct = 0
                         net.send("check") #request
