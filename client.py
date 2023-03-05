@@ -4,25 +4,27 @@ import sys
 import time
 
 def winLosePrint(player, win, potSize):
-    if player == (win - 1) :
-        text = font.render("you won " + potSize, True, (255,255,255))
+    if player == win :
+        text = font.render("you won $" + str(potSize), True, (255,255,255))
+        print("win print function working")
     else:
-        if potSize >0 <20:
+        if potSize > 0 and potSize < 20:
             text = font.render("you lost your on campus lunch money", True, (255,255,255))
-        elif potSize >19 <50:
+        elif potSize > 19 and potSize < 50:
             text = font.render("you lost money to buy groceries", True, (255,255,255))
-        elif potSize >49 <100:
+        elif potSize > 49 and potSize < 100:
             text = font.render("you lost a full tank of petrol", True, (255,255,255))
-        elif potSize >99 <250:
+        elif potSize > 99 and potSize < 250:
             text = font.render("you lost about a weeks rent", True, (255,255,255))
-            textRect = text.get_rect(topleft=(350,350))
-            screen.blit(text, textRect)
-            pygame.draw.rect(screen, (255,0,0),textRect)
-        elif potSize >249 <500:
+        elif potSize > 249 and potSize < 500:
             text = font.render("you lost two eight hour shifts at maccas pay", True, (255,255,255))
-        elif potSize >499 <999:
+        elif potSize > 499 and potSize < 2000:
             text = font.render("you lost enough money to get a new laptop, call 1800 858 858 if you need help with gambling", True, (255,255,255))
-            screen.blit(text, (250,300))
+    #screen.blit(text, (250,300))
+    textRect = text.get_rect(topleft=(130,300))
+    pygame.draw.rect(screen, (0,0,0),textRect)
+    screen.blit(text, textRect)
+    # display who won with what cards at (120,110)
 
 
 
@@ -67,13 +69,13 @@ def loadButtons(conditions):
     # conditions - boolean to determine if player can check or needs to call to not fold
     if conditions: # if 1 then needs to call, can also fold or bet
         screen.blit(betButtonText, betButtonRect)
-        screen.blit(callButtonText, callButtonRect)
+        #screen.blit(callButtonText, callButtonRect)
         screen.blit(foldButtonText, foldButtonRect)
         screen.blit(fullPotButtonText, fullPotButtonRect)
         screen.blit(allInButtonText, allInButtonRect)
 
         pygame.draw.rect(screen, (0,255,0),betButtonRect,2)
-        pygame.draw.rect(screen, (0,255,0),callButtonRect,2)
+        #pygame.draw.rect(screen, (0,255,0),callButtonRect,2)
         pygame.draw.rect(screen, (0,255,0),foldButtonRect,2)
         pygame.draw.rect(screen, (0,255,0),fullPotButtonRect,2)
         pygame.draw.rect(screen, (0,255,0),allInButtonRect,2)
@@ -102,7 +104,6 @@ clock = pygame.time.Clock()
 
 screen = pygame.display.set_mode((615, 410))
 
-
 # Background and game title
 bg = pygame.image.load('table.jpg').convert_alpha()
 
@@ -117,13 +118,19 @@ fullPotButtonText = font.render(" Bet Pot ", True, (0,0,0))
 fullPotButtonRect = fullPotButtonText.get_rect(topleft=(20,110))
 allInButtonText = font.render(" All In ", True, (0,0,0))
 allInButtonRect = allInButtonText.get_rect(topleft=(20,140))
-checkButtonText = font.render(" Check ", True, (0,0,0))
+checkButtonText = font.render(" Check/Call", True, (0,0,0))
 checkButtonRect = checkButtonText.get_rect(topleft=(20,50))
-callButtonText = font.render(" Call ", True, (0,0,0))
-callButtonRect = callButtonText.get_rect(topleft=(20,50))
+#callButtonText = font.render(" Call ", True, (0,0,0))
+#callButtonRect = callButtonText.get_rect(topleft=(20,50))
 foldButtonText = font.render(" Fold ", True, (0,0,0))
 foldButtonRect = foldButtonText.get_rect(topleft=(20,20))
+resetButtonText = font.render(" Next Hand ", True, (0,0,0))
+resetButtonRect = foldButtonText.get_rect(topleft=(20,250))
 printout = " "
+
+# defining card locations as an array of x coordinates, y always 142
+xCardCoords = [108,190,275,355,437]
+yCardCoords = 142
 
 def main():
     # game loop
@@ -135,12 +142,16 @@ def main():
     player = int(net.getP())
     print("you are player: ",player)
     loadButtons(0)
-    winLosePrint(0, 600)
     
     while running:
         x, y = pygame.mouse.get_pos()
         mackasRules = net.send("pull_request") #pull request, where everything is stored
-        #if mackasRules.player_has_folded and mackasRules.position[player]:
+        #if mackasRules.player_has_folded[player]:
+            # end the hand early, player who folded loses automatically
+            #winLosePrint(player, mackasRules.position[player],mackasRules.pot)
+            #displayCard(mackasRules.hand[(player + 1) % 2][0].name, mackasRules.hand[(player + 1) % 2][0].suit, 230, -50)
+            #displayCard(mackasRules.hand[(player + 1) % 2][1].name, mackasRules.hand[(player + 1) % 2][1].suit, 310, -50)
+            #mackasRules.position[player]
 
         # check if it's time to flop, turn, river
         if mackasRules.betting_round == 1:
@@ -153,7 +164,16 @@ def main():
         if mackasRules.betting_round == 4:
             net.send("winner")
             time.sleep(0.1)
+            print("mitch has sent his signal")
+            #print("player number is: " + str(player))
+            #print("winner number is: " + str(mackasRules.winner))
+            #print("pot size is: " + str(mackasRules.pot))
             winLosePrint(player, mackasRules.winner, mackasRules.pot)
+            # show the opponents cards
+            displayCard(mackasRules.hand[(player + 1) % 2][0].name, mackasRules.hand[(player + 1) % 2][0].suit, 230, -50)
+            displayCard(mackasRules.hand[(player + 1) % 2][1].name, mackasRules.hand[(player + 1) % 2][1].suit, 310, -50)
+            screen.blit(resetButtonText, resetButtonRect)
+            pygame.draw.rect(screen, (0,255,0),resetButtonRect,2)
 
         # read who's turn it is to act
         if mackasRules.num_of_actions[player] == mackasRules.num_of_actions[(player + 1) % 2]:
@@ -168,7 +188,7 @@ def main():
         # read the cards in players hand and those on the board
         if len(mackasRules.runout):
             for i in range(len(mackasRules.runout)):
-                displayCard(mackasRules.runout[i].name,mackasRules.runout[i].suit, 108+85*i, 145)
+                displayCard(mackasRules.runout[i].name,mackasRules.runout[i].suit, xCardCoords[i], 142)
         else:
             net.send("preflop")
             time.sleep(0.1)
@@ -192,6 +212,9 @@ def main():
                 running = False
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if resetButtonRect.collidepoint(event.pos):
+                        if mackasRules.betting_round == 4 or mackasRules.player_has_folded[0] == 1 or mackasRules.player_has_folded[1]:
+                            net.send("reset")
                 if toAct: # remove to replace with backend deciding when acting
                     # function of each button needs to be connected to backend
                     if betButtonRect.collidepoint(event.pos):
@@ -201,7 +224,7 @@ def main():
                         #toAct = 0
                         net.send("fullPotBet") # request
                     if allInButtonRect.collidepoint(event.pos):
-                        #toAct = 0
+                        toAct = 0
                         net.send("allIn") # request
                         print("going all in (not mitch's fault)")
                     if checkButtonRect.collidepoint(event.pos):
