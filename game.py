@@ -12,7 +12,7 @@ class Game:
         self.hand = [[], []]
         self.handstarted = False
         self.flopstarted = False
-        self.stack = [200, 200]
+        self.stack = [1000, 1000]
         self.num_of_actions = [0, 0]
         self.position = [0, 1]  # who is in position???
         self.pot = 0
@@ -300,9 +300,10 @@ class Game:
                     self.handreset()
                     self.betting_round += 1
             elif choice == 2:  # if player chooses to raise
-                if raise_amount + self.owed[player] >= self.stack:
-                    self.pot += self.stack
-                    self.stack = 0
+                
+                if raise_amount + self.owed[player] >= self.stack[player]:
+                    self.pot += self.stack[player]
+                    self.stack[player] = 0
                     self.num_of_actions[player] += 1
                 else:
                     self.committed += raise_amount + self.owed[player]
@@ -323,9 +324,9 @@ class Game:
                     self.handreset()
                     self.betting_round += 1
             elif choice == 2:  # if player chooses to raise
-                if raise_amount + self.owed[player] >= self.stack:
-                    self.pot += self.stack
-                    self.stack = 0
+                if raise_amount + self.owed[player] >= self.stack[player]:
+                    self.pot += self.stack[player]
+                    self.stack[player] = 0
                     self.num_of_actions[player] += 1
                 else:
                     self.committed += raise_amount + self.owed[player]
