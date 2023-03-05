@@ -176,6 +176,7 @@ def main():
             #print("player number is: " + str(player))
             #print("winner number is: " + str(mackasRules.winner))
             #print("pot size is: " + str(mackasRules.pot))
+            print("checkpoint")
             winLosePrint(player, mackasRules.winner, mackasRules.pot)
             # show the opponents cards
             displayCard(mackasRules.hand[(player + 1) % 2][0].name, mackasRules.hand[(player + 1) % 2][0].suit, 230, -50)
