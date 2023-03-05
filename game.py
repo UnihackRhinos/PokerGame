@@ -4,6 +4,8 @@ import time
 
 
 class Game:
+    winner = 0
+
     class Card:
         def __init__(self, suit, name, value, suit_num):
             self.suit = suit
@@ -25,6 +27,7 @@ class Game:
         def __init__(self):
             self.cards = []
             self.build()
+            self.winner = 0
 
         def build(self):
             suit_num = 0
@@ -161,9 +164,7 @@ class Game:
         # print(repitions)
         return score
 
-    winner = 0
     def FindWinner(self, hand_1, hand_2):
-        self.winnerchecked = True
         player = 0
         hand_num = 0
         win_hand = []
@@ -171,12 +172,10 @@ class Game:
         if hand_1[0] != hand_2[0]:
             if hand_1[0] > hand_2[0]:
                 player = 1
-                winner = 1
                 win_hand = hand_1
                 hand_num = hand_1[0]
             elif hand_1[0] < hand_2[0]:
                 player = 2
-                winner = 2
                 win_hand = hand_2
                 hand_num = hand_2[0]
         else:
@@ -184,16 +183,14 @@ class Game:
             while i < len(hand_1):
                 if hand_1[i].value > hand_2[i].value:
                     player = 1
-                    winner = 1
                     win_hand = hand_1
                     hand_num = hand_1[0]
                 elif hand_1[i].value < hand_2[i].value:
                     player = 2
-                    winner = 2
                     win_hand = hand_2
                     hand_num = hand_2[0]
                 i += 1
-
+        self.winner = player - 1
         if player == 0:
             return "Draw"
 
@@ -236,7 +233,6 @@ class Game:
         self.betting_round = 0
         self.turnstarted = False
         self.riverstarted = False
-        self.winnerchecked = False
         player_has_folded = False
 
     bigblind = 20
@@ -302,12 +298,17 @@ class Game:
                     self.handreset()
                     self.betting_round += 1
             elif choice == 2:  # if player chooses to raise
-                self.committed += raise_amount + self.owed[player]
-                self.stack[player] -= (raise_amount + self.owed[player])
-                self.pot += raise_amount + self.owed[player]
-                self.owed[player] = 0
-                self.owed[(player + 1) % 2] = raise_amount
-                self.num_of_actions[player] += 1
+                if raise_amount + self.owed[player] >= self.stack:
+                    self.pot += self.stack
+                    self.stack = 0
+                    self.num_of_actions[player] += 1
+                else:
+                    self.committed += raise_amount + self.owed[player]
+                    self.stack[player] -= (raise_amount + self.owed[player])
+                    self.pot += raise_amount + self.owed[player]
+                    self.owed[player] = 0
+                    self.owed[(player + 1) % 2] = raise_amount
+                    self.num_of_actions[player] += 1
             elif choice == 3:  # if player chooses to fold
                 self.hand_over = True
                 self.stack[(player + 1) % 2] += self.pot
@@ -319,16 +320,18 @@ class Game:
                 if sum(self.num_of_actions) == 2:
                     self.handreset()
                     self.betting_round += 1
-
-
-
             elif choice == 2:  # if player chooses to raise
-                self.committed += raise_amount + self.owed[player]
-                self.stack[player] -= (raise_amount + self.owed[player])
-                self.pot += raise_amount + self.owed[player]
-                self.owed[player] = 0
-                self.owed[(player + 1) % 2] = raise_amount
-                self.num_of_actions[player] += 1
+                if raise_amount + self.owed[player] >= self.stack:
+                    self.pot += self.stack
+                    self.stack = 0
+                    self.num_of_actions[player] += 1
+                else:
+                    self.committed += raise_amount + self.owed[player]
+                    self.stack[player] -= (raise_amount + self.owed[player])
+                    self.pot += raise_amount + self.owed[player]
+                    self.owed[player] = 0
+                    self.owed[(player + 1) % 2] = raise_amount
+                    self.num_of_actions[player] += 1
             elif choice == 3:  # if player chooses to fold
                 self.hand_over = True
                 self.stack[(player + 1) % 2] += self.pot
@@ -337,12 +340,25 @@ class Game:
         else:
             self.betting_round += 1
 
+    def award_pot(self, player):
+        if self.winner == player:
+            self.stack[player] += self.pot
+
+        elif self.winner != player:
+            self.stack[(player + 1) % 2] += self.pot
+
+        else:
+            self.stack[player] += self.pot / 2
+            self.stack[(player + 1) % 2] += self.pot / 2
+        print('yo')
+
+
+
     def handreset(self):
         self.num_of_actions = [0,0]
 
     def reset(self):
         self.allin = [0, 0]
-        self.ready = False
         self.deck = self.Deck().cards
         self.runout = []
         self.hand = [[], []]
@@ -357,5 +373,5 @@ class Game:
         self.betting_round = 0
         self.turnstarted = False
         self.riverstarted = False
-        player_has_folded = False
+        player_has_fold
 
